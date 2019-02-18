@@ -1,0 +1,33 @@
+version: '2'
+services:
+  db:
+    image: mysql:5.7.17
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./docker/mysql/volumes:/var/lib/mysql
+    env_file: ./docker/mysql/password.env
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/sinatra/Dockerfile
+    command: bundle exec ruby app.rb -p 3000 -o 0.0.0.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/myapp
+    environment:
+      SINATRA_ENV: development
+    env_file: ./docker/mysql/password.env
+    depends_on:
+      - db
+  bi:
+    image: metabase/metabase
+    volumes:
+      - "./docker/metabase/volumes:/metabase-data"
+    environment:
+      MB_DB_FILE: "/metabase-data/metabase.db"
+    ports:
+      - "3001:3000"
+    depends_on:
+      - db

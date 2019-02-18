@@ -1,0 +1,11 @@
+default: &default
+  adapter: mysql2
+  encoding: utf8
+  username: root
+  port: 3306
+  password: password
+  host: db
+
+development:
+  <<: *default
+  database: webapi_development
